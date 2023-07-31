@@ -1,6 +1,7 @@
 package org.practice.service;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface Service<T> {
 
@@ -8,5 +9,6 @@ public interface Service<T> {
     boolean update(T entity);
     T read(long id);
     List<T> readAll();
+    List<T> readAll(Predicate<T> predicate);
     T delete(long id);
 }

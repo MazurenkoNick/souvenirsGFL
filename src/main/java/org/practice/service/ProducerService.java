@@ -3,6 +3,7 @@ package org.practice.service;
 import org.practice.model.Producer;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ProducerService implements Service<Producer> {
 
@@ -40,6 +41,11 @@ public class ProducerService implements Service<Producer> {
 
     @Override
     public List<Producer> readAll() {
+        return null;
+    }
+
+    @Override
+    public List<Producer> readAll(Predicate<Producer> predicate) {
         return null;
     }
 

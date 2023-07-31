@@ -1,14 +1,18 @@
 package org.practice.service;
 
+import org.practice.filerepository.SouvenirFileRepository;
 import org.practice.model.Souvenir;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class SouvenirService implements Service<Souvenir> {
 
     private static SouvenirService INSTANCE = getInstance();
+    private final SouvenirFileRepository fileRepository;
 
-    private SouvenirService() {
+    private SouvenirService(SouvenirFileRepository fileRepository) {
+        this.fileRepository = fileRepository;
     }
 
     public static SouvenirService getInstance() {
@@ -17,7 +21,7 @@ public class SouvenirService implements Service<Souvenir> {
         }
         synchronized (SouvenirService.class) {
             if (INSTANCE == null) {
-                INSTANCE = new SouvenirService();
+                INSTANCE = new SouvenirService(SouvenirFileRepository.getInstance());
             }
         }
         return INSTANCE;
@@ -43,7 +47,11 @@ public class SouvenirService implements Service<Souvenir> {
 
     @Override
     public List<Souvenir> readAll() {
-        // TODO: 7/31/2023 implement read functionality 
+        return fileRepository.readAll();
+    }
+
+    @Override
+    public List<Souvenir> readAll(Predicate<Souvenir> predicate) {
         return null;
     }
 

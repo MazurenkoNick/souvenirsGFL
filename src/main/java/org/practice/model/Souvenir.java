@@ -14,4 +14,9 @@ public class Souvenir {
     private LocalDateTime manufacturingDate;
     private double price;
     private long producerId;
+
+    public static Souvenir fromString(String line) {
+        // TODO: 7/31/2023
+        return null;
+    }
 }
