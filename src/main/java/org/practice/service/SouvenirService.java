@@ -1,7 +1,8 @@
-package org.practice;
+package org.practice.service;
 
 import org.practice.model.Souvenir;
-import org.practice.service.Service;
+
+import java.util.List;
 
 public class SouvenirService implements Service<Souvenir> {
 
@@ -23,9 +24,9 @@ public class SouvenirService implements Service<Souvenir> {
     }
 
     @Override
-    public boolean save(Souvenir entity) {
+    public Souvenir save(Souvenir entity) {
         // TODO: 7/30/2023 implement save functionality
-        return false;
+        return null;
     }
 
     @Override
@@ -37,6 +38,12 @@ public class SouvenirService implements Service<Souvenir> {
     @Override
     public Souvenir read(long id) {
         // TODO: 7/30/2023 implement read functionality
+        return null;
+    }
+
+    @Override
+    public List<Souvenir> readAll() {
+        // TODO: 7/31/2023 implement read functionality 
         return null;
     }
 

@@ -1,9 +1,12 @@
 package org.practice.service;
 
+import java.util.List;
+
 public interface Service<T> {
 
-    boolean save(T entity);
+    T save(T entity);
     boolean update(T entity);
     T read(long id);
+    List<T> readAll();
     T delete(long id);
 }
