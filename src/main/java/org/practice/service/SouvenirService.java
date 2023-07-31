@@ -8,6 +8,11 @@ import java.util.function.Predicate;
 
 public class SouvenirService implements Service<Souvenir> {
 
+    public static void main(String[] args) {
+        List<Souvenir> souvenirs = SouvenirService.getInstance().readAll();
+        souvenirs.forEach(System.out::println);
+    }
+
     private static SouvenirService INSTANCE = getInstance();
     private final SouvenirFileRepository fileRepository;
 
@@ -29,8 +34,7 @@ public class SouvenirService implements Service<Souvenir> {
 
     @Override
     public Souvenir save(Souvenir entity) {
-        // TODO: 7/30/2023 implement save functionality
-        return null;
+        return fileRepository.addSouvenir(entity);
     }
 
     @Override
@@ -52,7 +56,7 @@ public class SouvenirService implements Service<Souvenir> {
 
     @Override
     public List<Souvenir> readAll(Predicate<Souvenir> predicate) {
-        return null;
+        return fileRepository.readAll(predicate);
     }
 
     @Override
