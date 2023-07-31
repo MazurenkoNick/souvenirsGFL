@@ -1,7 +1,7 @@
 package org.practice.filerepository;
 
-import lombok.SneakyThrows;
 import org.practice.model.Souvenir;
+import org.practice.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,10 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -20,11 +18,6 @@ public class SouvenirFileRepository {
 
     private static SouvenirFileRepository INSTANCE = getInstance();
     private static final String PATH = "src/main/resources/souvenirs.csv";
-
-    @SneakyThrows
-    private SouvenirFileRepository() {
-        Path path = Paths.get(PATH);
-    }
 
     public static SouvenirFileRepository getInstance() {
         if (INSTANCE != null) {
@@ -50,16 +43,12 @@ public class SouvenirFileRepository {
     }
 
     public Souvenir addSouvenir(Souvenir souvenir) {
-        long possibleId = generateSouvenirId();
+        long id = generateUniqueId();
 
-        // if id is free, save a new souvenir to the file
-        while (!isFreeId(possibleId)) {
-            possibleId = generateSouvenirId();
-        }
         try (BufferedWriter writer = new BufferedWriter(
                 new FileWriter(PATH, true))) {
 
-            souvenir.setId(possibleId);
+            souvenir.setId(id);
             writer.newLine();
             writer.write(souvenir.toString());
         }
@@ -67,6 +56,16 @@ public class SouvenirFileRepository {
             throw new RuntimeException(e);
         }
         return souvenir;
+    }
+
+    private long generateUniqueId() {
+        long id = Utils.generateId();
+
+        // if id is free, save a new souvenir to the file
+        while (!isFreeId(id)) {
+            id = Utils.generateId();
+        }
+        return id;
     }
 
     private boolean isFreeId(long id) {
@@ -79,27 +78,11 @@ public class SouvenirFileRepository {
 
             return reader.lines()
                     .skip(1)
-                    .map(Souvenir::fromString)
+                    .map(string -> new Souvenir().fromString(string))
                     .collect(Collectors.toList());
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private  long generateSouvenirId() {
-        UUID uuid = UUID.randomUUID();
-        long mostSigBits = uuid.getMostSignificantBits();
-        long leastSigBits = uuid.getLeastSignificantBits();
-
-        // XOR the most and least significant bits to generate a long ID
-        long souvenirId = mostSigBits ^ leastSigBits;
-
-        // Ensure the ID is positive (as XOR might produce a negative value)
-        if (souvenirId < 0) {
-            souvenirId = -souvenirId;
-        }
-
-        return souvenirId;
     }
 }

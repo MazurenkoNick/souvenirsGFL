@@ -8,11 +8,6 @@ import java.util.function.Predicate;
 
 public class SouvenirService implements Service<Souvenir> {
 
-    public static void main(String[] args) {
-        List<Souvenir> souvenirs = SouvenirService.getInstance().readAll();
-        souvenirs.forEach(System.out::println);
-    }
-
     private static SouvenirService INSTANCE = getInstance();
     private final SouvenirFileRepository fileRepository;
 

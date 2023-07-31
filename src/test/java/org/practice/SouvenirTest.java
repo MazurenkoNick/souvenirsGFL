@@ -22,7 +22,7 @@ public class SouvenirTest {
                 .price(200.00)
                 .producerId(0)
                 .build();
-        Souvenir actual = Souvenir.fromString(line);
+        Souvenir actual = Souvenir.builder().build().fromString(line);
 
         assertEquals("Souvenirs must be equal", expected, actual);
     }
