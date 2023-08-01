@@ -17,7 +17,7 @@ import java.util.List;
 public class Souvenir extends CsvModel<Souvenir> {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
-    private long id;
+    private Long id;
     private String name;
     private Date manufacturingDate;
     private double price;
@@ -47,7 +47,7 @@ public class Souvenir extends CsvModel<Souvenir> {
     }
 
     @Override
-    public String toString() {
+    public String format() {
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         return String.format("%d, %s, %s, %f, %d",
                 id, name, formatter.format(manufacturingDate), price, producerId

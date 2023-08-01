@@ -17,7 +17,7 @@ public class SouvenirTest {
         String line = "0,Toy,2022-02-02,200.00,0";
 
         Souvenir expected = Souvenir.builder()
-                .id(0)
+                .id(0L)
                 .name("Toy")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
                 .price(200.00)

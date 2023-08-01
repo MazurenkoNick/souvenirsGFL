@@ -25,9 +25,8 @@ public class SouvenirFileRepositoryTest {
     public void addTest() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        // 3954570612593142035, Big Toy, 2022-02-02, 200.000000, 0
         Souvenir expected = Souvenir.builder()
-                .id(0)
+                .id(0L)
                 .name("Porsche")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
                 .price(price + 10000)
@@ -60,7 +59,7 @@ public class SouvenirFileRepositoryTest {
     @Test
     public void updateTest() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        // 3378031933999975708, Big Toy, 2022-02-02, 200.000000, 0
+        // 3954570612593142035, Big Toy, 2022-02-02, 200.000000, 0
         Souvenir expected = Souvenir.builder()
                 .id(3954570612593142035L)
                 .name("Big Toy")
@@ -76,10 +75,19 @@ public class SouvenirFileRepositoryTest {
     }
 
     @Test
-    public void deleteTest() {
-        long id = 2776761480512133499L;
+    public void addAndDeleteTest() throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        assertTrue(souvenirFileRepository.delete(id));
+        // 3954570612593142035, Big Toy, 2022-02-02, 200.000000, 0
+        Souvenir expected = Souvenir.builder()
+                .id(0L)
+                .name("Porsche")
+                .manufacturingDate(dateFormat.parse("2022-02-02"))
+                .price(price + 10000)
+                .build();
+        Souvenir actual = souvenirFileRepository.add(expected);
+
+        assertTrue(souvenirFileRepository.delete(actual.getId()));
         assertFalse(souvenirFileRepository.delete(-10));
     }
 }

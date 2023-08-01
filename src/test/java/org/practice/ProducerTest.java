@@ -13,7 +13,7 @@ public class ProducerTest {
         String line = "0, Ivan Production, Ukraine, 444453529002";
 
         Producer expected = Producer.builder()
-                .id(0)
+                .id(0L)
                 .name("Ivan Production")
                 .country("Ukraine")
                 .details("444453529002")

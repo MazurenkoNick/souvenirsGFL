@@ -11,7 +11,7 @@ import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class CsvModel<T> {
+public abstract class CsvModel<T> implements Entity {
 
     public T fromString(String line) {
         CSVParser parser = new CSVParserBuilder().withSeparator(',').build();

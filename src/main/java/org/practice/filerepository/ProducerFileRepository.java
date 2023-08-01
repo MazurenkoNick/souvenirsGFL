@@ -1,6 +1,6 @@
 package org.practice.filerepository;
 
-import org.practice.model.Souvenir;
+import org.practice.model.Producer;
 import org.practice.utils.Utils;
 
 import java.io.BufferedReader;
@@ -11,18 +11,18 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SouvenirFileRepository extends AbstractFileRepository<Souvenir> {
+public class ProducerFileRepository extends AbstractFileRepository<Producer> {
 
-    private static SouvenirFileRepository INSTANCE = getInstance();
-    private static final String PATH = "src/main/resources/souvenirs.csv";
+    private static ProducerFileRepository INSTANCE = getInstance();
+    private static final String PATH = "src/main/resources/producers.csv";
 
-    public static SouvenirFileRepository getInstance() {
+    public static ProducerFileRepository getInstance() {
         if (INSTANCE != null) {
             return INSTANCE;
         }
-        synchronized (SouvenirFileRepository.class) {
+        synchronized (ProducerFileRepository.class) {
             if (INSTANCE == null) {
-                INSTANCE = new SouvenirFileRepository();
+                INSTANCE = new ProducerFileRepository();
             }
         }
         return INSTANCE;
@@ -30,17 +30,17 @@ public class SouvenirFileRepository extends AbstractFileRepository<Souvenir> {
 
     @Override
     String filePropertiesHeader() {
-        return "id, name, manufacturing date, price, producerId";
+        return "id,name,country,details";
     }
 
     @Override
-    List<Souvenir> entityList() {
+    List<Producer> entityList() {
         try (BufferedReader reader = Files.newBufferedReader(
                 Paths.get(PATH), StandardCharsets.UTF_8)) {
 
             return reader.lines()
                     .skip(1)
-                    .map(string -> new Souvenir().fromString(string))
+                    .map(string -> new Producer().fromString(string))
                     .collect(Collectors.toList());
         }
         catch (IOException e) {

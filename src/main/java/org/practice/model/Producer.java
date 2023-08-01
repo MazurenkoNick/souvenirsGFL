@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class Producer extends CsvModel<Producer> {
 
-    private long id;
+    private Long id;
     private String name;
     private String country;
     private String details;
@@ -33,7 +33,7 @@ public class Producer extends CsvModel<Producer> {
     }
 
     @Override
-    public String toString() {
+    public String format() {
         return String.format("%d, %s, %s, %s",
                 id, name, country, details
         );
