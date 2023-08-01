@@ -1,12 +1,13 @@
 package org.practice;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.practice.model.Souvenir;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class SouvenirTest {
 
@@ -24,6 +25,6 @@ public class SouvenirTest {
                 .build();
         Souvenir actual = Souvenir.builder().build().fromString(line);
 
-        assertEquals("Souvenirs must be equal", expected, actual);
+        assertEquals(expected, actual, "Souvenirs must be equal");
     }
 }

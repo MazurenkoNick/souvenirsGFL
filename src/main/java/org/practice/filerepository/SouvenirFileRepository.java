@@ -42,12 +42,18 @@ public class SouvenirFileRepository {
                 .collect(Collectors.toList());
     }
 
-    public Souvenir addSouvenir(Souvenir souvenir) {
+    public Souvenir read(long id) {
+        List<Souvenir> souvenirList = readAll(s -> s.getId() == id);
+        if (souvenirList.isEmpty()) {
+            return null;
+        }
+        return souvenirList.get(0);
+    }
+
+    public Souvenir add(Souvenir souvenir) {
         long id = generateUniqueId();
 
-        try (BufferedWriter writer = new BufferedWriter(
-                new FileWriter(PATH, true))) {
-
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PATH, true))) {
             souvenir.setId(id);
             writer.newLine();
             writer.write(souvenir.toString());
@@ -56,6 +62,52 @@ public class SouvenirFileRepository {
             throw new RuntimeException(e);
         }
         return souvenir;
+    }
+
+    public boolean update(Souvenir souvenir) {
+        long id = souvenir.getId();
+
+        // if id is free, there is no such souvenir in the file
+        if (isFreeId(id)) {
+            return false;
+        }
+        List<Souvenir> souvenirs = readAll().stream()
+                .map(souv -> {
+                    if (souv.getId() == id) {
+                        return souvenir;
+                    } return souv;
+                })
+                .toList();
+
+        replaceAll(souvenirs);
+        return true;
+    }
+
+    public boolean delete(long id) {
+        // if id is free, there is no such souvenir in the file
+        if (isFreeId(id)) {
+            return false;
+        }
+        List<Souvenir> souvenirs = readAll().stream()
+                .filter(souvenir -> souvenir.getId() != id)
+                .toList();
+
+        replaceAll(souvenirs);
+        return true;
+    }
+
+    public boolean replaceAll(List<Souvenir> souvenirs) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PATH))) {
+            writer.write("id, name, manufacturing date, price, producerId");
+            for (Souvenir s : souvenirs) {
+                writer.newLine();
+                writer.write(s.toString());
+            }
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 
     private long generateUniqueId() {

@@ -28,20 +28,18 @@ public class SouvenirService implements Service<Souvenir> {
     }
 
     @Override
-    public Souvenir save(Souvenir entity) {
-        return fileRepository.addSouvenir(entity);
+    public Souvenir save(Souvenir souvenir) {
+        return fileRepository.add(souvenir);
     }
 
     @Override
-    public boolean update(Souvenir entity) {
-        // TODO: 7/30/2023 implement update functionality
-        return false;
+    public boolean update(Souvenir souvenir) {
+        return fileRepository.update(souvenir);
     }
 
     @Override
     public Souvenir read(long id) {
-        // TODO: 7/30/2023 implement read functionality
-        return null;
+        return fileRepository.read(id);
     }
 
     @Override
@@ -55,8 +53,7 @@ public class SouvenirService implements Service<Souvenir> {
     }
 
     @Override
-    public Souvenir delete(long id) {
-        // TODO: 7/30/2023 implement delete functionality
-        return null;
+    public boolean delete(long id) {
+        return fileRepository.delete(id);
     }
 }

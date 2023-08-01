@@ -10,5 +10,5 @@ public interface Service<T> {
     T read(long id);
     List<T> readAll();
     List<T> readAll(Predicate<T> predicate);
-    T delete(long id);
+    boolean delete(long id);
 }

@@ -1,9 +1,10 @@
 package org.practice;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.practice.model.Producer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class ProducerTest {
 
@@ -19,6 +20,6 @@ public class ProducerTest {
                 .build();
         Producer actual = Producer.builder().build().fromString(line);
 
-        assertEquals("Producers must be equal", expected, actual);
+        assertEquals(expected, actual, "Producers must be equal");
     }
 }

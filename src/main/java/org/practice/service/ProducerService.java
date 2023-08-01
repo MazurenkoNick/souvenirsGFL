@@ -50,7 +50,7 @@ public class ProducerService implements Service<Producer> {
     }
 
     @Override
-    public Producer delete(long id) {
-        return null;
+    public boolean delete(long id) {
+        return false;
     }
 }
