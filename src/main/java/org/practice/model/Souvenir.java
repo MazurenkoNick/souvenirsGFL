@@ -21,7 +21,7 @@ public class Souvenir extends CsvModel<Souvenir> {
     private String name;
     private Date manufacturingDate;
     private double price;
-    private long producerId;
+    private Long producerId;
 
     @Override
     int propertiesLength() {

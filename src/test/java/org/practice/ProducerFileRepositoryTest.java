@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.practice.filerepository.ProducerFileRepository;
 import org.practice.model.Producer;
 
-import java.text.ParseException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ProducerFileRepositoryTest {
@@ -68,7 +66,7 @@ public class ProducerFileRepositoryTest {
     }
 
     @Test
-    public void addAndDeleteTest() throws ParseException {
+    public void addAndDeleteTest() {
         Producer expected = Producer.builder()
                 .name("Volkswagen")
                 .details("44477737333")
@@ -78,6 +76,6 @@ public class ProducerFileRepositoryTest {
         Producer actual = producerFileRepository.add(expected);
 
         assertTrue(producerFileRepository.delete(actual.getId()));
-        assertFalse(producerFileRepository.delete(-10));
+        assertFalse(producerFileRepository.delete(-10L));
     }
 }

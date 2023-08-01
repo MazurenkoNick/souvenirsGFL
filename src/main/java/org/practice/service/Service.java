@@ -7,8 +7,8 @@ public interface Service<T> {
 
     T save(T entity);
     boolean update(T entity);
-    T read(long id);
+    T read(Long id);
     List<T> readAll();
     List<T> readAll(Predicate<T> predicate);
-    boolean delete(long id);
+    boolean delete(Long id);
 }

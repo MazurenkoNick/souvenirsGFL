@@ -30,6 +30,7 @@ public class SouvenirFileRepositoryTest {
                 .name("Porsche")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
                 .price(price + 10000)
+                .producerId(0L)
                 .build();
         Souvenir actual = souvenirFileRepository.add(expected);
 
@@ -49,6 +50,7 @@ public class SouvenirFileRepositoryTest {
                 .name("Big Toy")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
                 .price(price)
+                .producerId(0L)
                 .build();
         Souvenir actual = souvenirFileRepository.read(3954570612593142035L);
 
@@ -65,6 +67,7 @@ public class SouvenirFileRepositoryTest {
                 .name("Big Toy")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
                 .price(price)
+                .producerId(0L)
                 .build();
 
         souvenirFileRepository.update(expected);
@@ -84,10 +87,11 @@ public class SouvenirFileRepositoryTest {
                 .name("Porsche")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
                 .price(price + 10000)
+                .producerId(0L)
                 .build();
         Souvenir actual = souvenirFileRepository.add(expected);
 
         assertTrue(souvenirFileRepository.delete(actual.getId()));
-        assertFalse(souvenirFileRepository.delete(-10));
+        assertFalse(souvenirFileRepository.delete(-10L));
     }
 }

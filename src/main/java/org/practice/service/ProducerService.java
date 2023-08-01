@@ -1,7 +1,7 @@
 package org.practice.service;
 
+import org.practice.filerepository.FileRepository;
 import org.practice.filerepository.ProducerFileRepository;
-import org.practice.filerepository.SouvenirFileRepository;
 import org.practice.model.Producer;
 
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.function.Predicate;
 public class ProducerService implements Service<Producer> {
 
     private static ProducerService INSTANCE = getInstance();
-    private final ProducerFileRepository fileRepository;
+    private final FileRepository<Producer> fileRepository;
 
-    private ProducerService(ProducerFileRepository fileRepository) {
+    private ProducerService(FileRepository<Producer> fileRepository) {
         this.fileRepository = fileRepository;
     }
 
@@ -22,7 +22,7 @@ public class ProducerService implements Service<Producer> {
         }
         synchronized (ProducerService.class) {
             if (INSTANCE == null) {
-                INSTANCE = new ProducerService();
+                INSTANCE = new ProducerService(ProducerFileRepository.getInstance());
             }
         }
         return INSTANCE;
@@ -39,7 +39,7 @@ public class ProducerService implements Service<Producer> {
     }
 
     @Override
-    public Producer read(long id) {
+    public Producer read(Long id) {
         return fileRepository.read(id);
     }
 
@@ -54,7 +54,7 @@ public class ProducerService implements Service<Producer> {
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(Long id) {
         return fileRepository.delete(id);
     }
 }

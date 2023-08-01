@@ -31,10 +31,6 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
      */
     abstract String filePropertiesHeader();
 
-    boolean isFreeId(long id) {
-        return readAll(s -> s.getId() == id).isEmpty();
-    }
-
     public List<T> readAll() {
         return entityList();
     }
@@ -87,9 +83,9 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return true;
     }
 
-    public boolean delete(long id) {
+    public boolean delete(Long id) {
         // if id is free, there is no such entity in the file
-        if (isFreeId(id)) {
+        if (id == null || isFreeId(id)) {
             return false;
         }
         List<T> entities = readAll().stream()
@@ -112,5 +108,9 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
             throw new RuntimeException(e);
         }
         return true;
+    }
+
+    boolean isFreeId(long id) {
+        return readAll(s -> s.getId() == id).isEmpty();
     }
 }

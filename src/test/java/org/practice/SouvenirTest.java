@@ -21,7 +21,7 @@ public class SouvenirTest {
                 .name("Toy")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
                 .price(200.00)
-                .producerId(0)
+                .producerId(0L)
                 .build();
         Souvenir actual = Souvenir.builder().build().fromString(line);
 

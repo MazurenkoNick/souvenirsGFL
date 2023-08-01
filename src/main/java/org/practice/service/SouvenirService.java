@@ -1,5 +1,6 @@
 package org.practice.service;
 
+import org.practice.filerepository.FileRepository;
 import org.practice.filerepository.SouvenirFileRepository;
 import org.practice.model.Souvenir;
 
@@ -9,9 +10,9 @@ import java.util.function.Predicate;
 public class SouvenirService implements Service<Souvenir> {
 
     private static SouvenirService INSTANCE = getInstance();
-    private final SouvenirFileRepository fileRepository;
+    private final FileRepository<Souvenir> fileRepository;
 
-    private SouvenirService(SouvenirFileRepository fileRepository) {
+    private SouvenirService(FileRepository<Souvenir> fileRepository) {
         this.fileRepository = fileRepository;
     }
 
@@ -38,7 +39,7 @@ public class SouvenirService implements Service<Souvenir> {
     }
 
     @Override
-    public Souvenir read(long id) {
+    public Souvenir read(Long id) {
         return fileRepository.read(id);
     }
 
@@ -53,7 +54,7 @@ public class SouvenirService implements Service<Souvenir> {
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(Long id) {
         return fileRepository.delete(id);
     }
 }
