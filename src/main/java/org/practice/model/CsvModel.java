@@ -21,7 +21,7 @@ public abstract class CsvModel<T> implements Entity {
     abstract T buildFromList(List<String> formattedProperties);
     abstract int propertiesLength();
 
-    public T fromString(String line) {
+    public T fromCsvString(String line) {
         CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
 
         try (CSVReader csvReader = new CSVReaderBuilder(
