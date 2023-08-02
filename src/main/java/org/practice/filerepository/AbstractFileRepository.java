@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -83,17 +84,21 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return true;
     }
 
+    public boolean delete(Predicate<T> predicate) {
+        List<T> entities = readAll().stream()
+                .filter(predicate)
+                .toList();
+
+        replaceAll(entities);
+        return true;
+    }
+
     public boolean delete(Long id) {
         // if id is free, there is no such entity in the file
         if (id == null || isFreeId(id)) {
             return false;
         }
-        List<T> entities = readAll().stream()
-                .filter(entity -> entity.getId() != id)
-                .toList();
-
-        replaceAll(entities);
-        return true;
+        return delete(entity -> !Objects.equals(entity.getId(), id));
     }
 
     public boolean replaceAll(List<T> entities) {

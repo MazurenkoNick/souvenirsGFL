@@ -13,6 +13,14 @@ import java.util.List;
 
 public abstract class CsvModel<T> implements Entity {
 
+    /**
+     * @param formattedProperties properties that come from the string (file string).
+     *                            Order of the properties must be equal to the order of the {@link T} properties
+     * @return {@link T} object, which should be built using {@code List<String> formattedProperties}
+     */
+    abstract T buildFromList(List<String> formattedProperties);
+    abstract int propertiesLength();
+
     public T fromString(String line) {
         CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
 
@@ -33,12 +41,4 @@ public abstract class CsvModel<T> implements Entity {
             throw new IllegalArgumentException("Error parsing CSV line: " + line, e);
         }
     }
-
-    /**
-     * @param formattedProperties properties that come from the string (file string).
-     *                            Order of the properties must be equal to the order of the {@link T} properties
-     * @return {@link T} object, which should be built using {@code List<String> formattedProperties}
-     */
-    abstract T buildFromList(List<String> formattedProperties);
-    abstract int propertiesLength();
 }
