@@ -2,10 +2,7 @@ package org.practice.filerepository;
 
 import org.practice.model.Entity;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,11 +24,6 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     abstract long generateUniqueId();
 
     /**
-     * @return first line of the file that will be used during rewriting the content of the file
-     */
-    abstract String filePropertiesHeader();
-
-    /**
      * This method will be used to convert a row from the file to the entity.
      * E.g. if it's a csv line, you need to implement this method to retrieve all the
      * properties and set it into {@link T} entity, then return it.
@@ -40,6 +32,14 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
      * @return T entity that will be returned after conversion from string line
      */
     abstract T fromString(String line);
+
+    /**
+     * @return first line of the file that will be used during rewriting the content of the file.
+     * By default, there is no properties header in the file
+     */
+    String filePropertiesHeader() {
+        return null;
+    };
 
     public List<T> readAll() {
         return entityList();
@@ -63,10 +63,16 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     public T add(T entity) {
         long id = generateUniqueId();
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getFilePath(), true))) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(getFilePath(), true));
+            BufferedReader reader = new BufferedReader(new FileReader(getFilePath()))) {
+            
+            String lastLine = getLastLine(reader);
+            // if last line is not empty - create a new empty line, where we will write new entity
+            if (!lastLine.isBlank()) {
+                writer.println();
+            }
             entity.setId(id);
-            writer.newLine();
-            writer.write(entity.format());
+            writer.println(entity.format());
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -83,7 +89,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         }
         List<T> entities = readAll().stream()
                 .map(e -> {
-                    if (e.getId() == id) {
+                    if (Objects.equals(e.getId(), id)) {
                         return entity;
                     } return e;
                 })
@@ -111,11 +117,12 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     }
 
     public boolean replaceAll(List<T> entities) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getFilePath()))) {
-            writer.write(filePropertiesHeader());
+        try (PrintWriter writer = new PrintWriter(new FileWriter(getFilePath()))) {
+            if (filePropertiesHeader() != null) {
+                writer.println(filePropertiesHeader());
+            }
             for (T entity : entities) {
-                writer.newLine();
-                writer.write(entity.format());
+                writer.println(entity.format());
             }
         }
         catch (IOException e) {
@@ -136,7 +143,8 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
                 Paths.get(getFilePath()), StandardCharsets.UTF_8)) {
 
             return reader.lines()
-                    .skip(1)
+                    .skip(filePropertiesHeader() == null ? 0 : 1)
+                    .filter(s -> !s.isBlank())
                     .map(this::fromString)
                     .collect(Collectors.toList());
         }
@@ -147,5 +155,15 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
 
     boolean isFreeId(long id) {
         return readAll(s -> s.getId() == id).isEmpty();
+    }
+
+    private String getLastLine(BufferedReader reader) throws IOException {
+        String lastLine = null;
+        String currentLine;
+
+        while ((currentLine = reader.readLine()) != null) {
+            lastLine = currentLine;
+        }
+        return lastLine;
     }
 }

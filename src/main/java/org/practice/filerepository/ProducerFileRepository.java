@@ -20,10 +20,10 @@ public class ProducerFileRepository extends AbstractFileRepository<Producer> {
         return INSTANCE;
     }
 
-    @Override
-    String filePropertiesHeader() {
-        return "id,name,country,details";
-    }
+//    @Override
+//    String filePropertiesHeader() {
+//        return "id,name,country,details";
+//    }
 
     @Override
     Producer fromString(String line) {
