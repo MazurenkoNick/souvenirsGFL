@@ -44,7 +44,6 @@ public class SouvenirFileRepositoryTest {
     public void readTest() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        // 3954570612593142035, Big Toy, 2022-02-02, 200.000000, 0
         Souvenir expected = Souvenir.builder()
                 .id(3954570612593142035L)
                 .name("Big Toy")
@@ -61,7 +60,6 @@ public class SouvenirFileRepositoryTest {
     @Test
     public void updateTest() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        // 3954570612593142035, Big Toy, 2022-02-02, 200.000000, 0
         Souvenir expected = Souvenir.builder()
                 .id(3954570612593142035L)
                 .name("Big Toy")
@@ -81,7 +79,6 @@ public class SouvenirFileRepositoryTest {
     public void addAndDeleteTest() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        // 3954570612593142035, Big Toy, 2022-02-02, 200.000000, 0
         Souvenir expected = Souvenir.builder()
                 .id(0L)
                 .name("Porsche")

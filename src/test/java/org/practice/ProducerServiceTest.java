@@ -33,7 +33,7 @@ public class ProducerServiceTest {
     @ParameterizedTest
     @MethodSource("org.practice.TestDataProvider#testReadProducersWithYear")
     public void testReadProducersWithYear(List<Producer> expected, int year) {
-        List<Producer> actual = producerService.readProductsWithYear(year);
+        List<Producer> actual = producerService.readProducersWhereSouvenirsWithYear(year);
 
         assertEquals(expected, actual);
     }

@@ -45,7 +45,7 @@ public class ProducerService implements Service<Producer> {
         return readAll(producer -> producersId.contains(producer.getId()));
     }
 
-    public List<Producer> readProductsWithYear(int year) {
+    public List<Producer> readProducersWhereSouvenirsWithYear(int year) {
         List<Long> producersId = souvenirService.readAllByYear(year).stream()
                 .map(Souvenir::getProducerId)
                 .distinct()
@@ -56,7 +56,10 @@ public class ProducerService implements Service<Producer> {
 
     public boolean deleteProductAndSouvenirs(long id) {
         boolean productDeleted = delete(id);
-        boolean souvenirsDeleted = souvenirService.delete(souvenir -> souvenir.getProducerId().equals(id));
+        boolean souvenirsDeleted = false;
+        if (productDeleted) {
+            souvenirsDeleted = souvenirService.delete(souvenir -> souvenir.getProducerId().equals(id));
+        }
         return productDeleted && souvenirsDeleted;
     }
 
