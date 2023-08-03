@@ -57,4 +57,8 @@ public class ProducerService implements Service<Producer> {
     public boolean delete(Long id) {
         return fileRepository.delete(id);
     }
+    @Override
+    public boolean delete(Predicate<Producer> predicate) {
+        return fileRepository.delete(predicate);
+    }
 }

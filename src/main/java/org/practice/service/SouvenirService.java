@@ -57,4 +57,9 @@ public class SouvenirService implements Service<Souvenir> {
     public boolean delete(Long id) {
         return fileRepository.delete(id);
     }
+
+    @Override
+    public boolean delete(Predicate<Souvenir> predicate) {
+        return fileRepository.delete(predicate);
+    }
 }

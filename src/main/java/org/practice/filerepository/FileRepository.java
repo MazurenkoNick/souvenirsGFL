@@ -10,6 +10,7 @@ public interface FileRepository<T> {
     T read(long id);
     T add(T entity);
     boolean update(T entity);
+    boolean delete(Predicate<T> predicate);
     boolean delete(Long id);
     boolean replaceAll(List<T> entities);
 }

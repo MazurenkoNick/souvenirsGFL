@@ -34,17 +34,19 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     abstract T fromString(String line);
 
     /**
-     * @return first line of the file that will be used during rewriting the content of the file.
+     * @return first line of the file which should represent properties of the current entity.
      * By default, there is no properties header in the file
      */
     String filePropertiesHeader() {
         return null;
     };
 
+    @Override
     public List<T> readAll() {
         return entityList();
     }
 
+    @Override
     public List<T> readAll(Predicate<T> predicate) {
         return entityList()
                 .stream()
@@ -52,6 +54,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
                 .collect(Collectors.toList());
     }
 
+    @Override
     public T read(long id) {
         List<T> entityList = readAll(s -> s.getId() == id);
         if (entityList.isEmpty()) {
@@ -60,12 +63,13 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return entityList.get(0);
     }
 
+    @Override
     public T add(T entity) {
         long id = generateUniqueId();
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(getFilePath(), true));
             BufferedReader reader = new BufferedReader(new FileReader(getFilePath()))) {
-            
+
             String lastLine = getLastLine(reader);
             // if last line is not empty - create a new empty line, where we will write new entity
             if (!lastLine.isBlank()) {
@@ -80,6 +84,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return entity;
     }
 
+    @Override
     public boolean update(T entity) {
         Long id = entity.getId();
 
@@ -99,6 +104,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return true;
     }
 
+    @Override
     public boolean delete(Predicate<T> predicate) {
         List<T> entities = readAll().stream()
                 .filter(predicate)
@@ -108,6 +114,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return true;
     }
 
+    @Override
     public boolean delete(Long id) {
         // if id is free, there is no such entity in the file
         if (id == null || isFreeId(id)) {
@@ -116,6 +123,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return delete(entity -> !Objects.equals(entity.getId(), id));
     }
 
+    @Override
     public boolean replaceAll(List<T> entities) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(getFilePath()))) {
             if (filePropertiesHeader() != null) {
