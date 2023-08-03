@@ -68,7 +68,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         long id = generateUniqueId();
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(getFilePath(), true));
-            BufferedReader reader = new BufferedReader(new FileReader(getFilePath()))) {
+             BufferedReader reader = new BufferedReader(new FileReader(getFilePath()))) {
 
             String lastLine = getLastLine(reader);
             // if last line is not empty - create a new empty line, where we will write new entity
@@ -76,7 +76,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
                 writer.println();
             }
             entity.setId(id);
-            writer.println(entity.format());
+            writer.print(entity.format());
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -107,7 +107,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     @Override
     public boolean delete(Predicate<T> predicate) {
         List<T> entities = readAll().stream()
-                .filter(predicate)
+                .filter(predicate.negate())
                 .toList();
 
         replaceAll(entities);
@@ -120,7 +120,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         if (id == null || isFreeId(id)) {
             return false;
         }
-        return delete(entity -> !Objects.equals(entity.getId(), id));
+        return delete(entity -> Objects.equals(entity.getId(), id));
     }
 
     @Override
@@ -166,7 +166,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     }
 
     private String getLastLine(BufferedReader reader) throws IOException {
-        String lastLine = null;
+        String lastLine = "";
         String currentLine;
 
         while ((currentLine = reader.readLine()) != null) {

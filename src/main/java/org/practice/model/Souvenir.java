@@ -53,4 +53,8 @@ public class Souvenir extends CsvModel<Souvenir> {
                 id, name, formatter.format(manufacturingDate), price, producerId
         );
     }
+
+    public int getManufacturingYear() {
+        return getManufacturingDate().getYear() + 1900;
+    }
 }

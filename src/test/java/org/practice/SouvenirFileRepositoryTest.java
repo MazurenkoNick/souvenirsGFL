@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// TODO: 8/2/2023 Make parametrized tests
 public class SouvenirFileRepositoryTest {
 
     private static SouvenirFileRepository souvenirFileRepository;
@@ -50,7 +49,7 @@ public class SouvenirFileRepositoryTest {
                 .id(3954570612593142035L)
                 .name("Big Toy")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
-                .price(price)
+                .price(349)
                 .producerId(0L)
                 .build();
         Souvenir actual = souvenirFileRepository.read(3954570612593142035L);
@@ -93,6 +92,7 @@ public class SouvenirFileRepositoryTest {
         Souvenir actual = souvenirFileRepository.add(expected);
 
         assertTrue(souvenirFileRepository.delete(actual.getId()));
+        assertNull(souvenirFileRepository.read(actual.getId()));
         assertFalse(souvenirFileRepository.delete(-10L));
     }
 }

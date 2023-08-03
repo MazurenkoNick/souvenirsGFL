@@ -2,6 +2,7 @@ package org.practice.service;
 
 import org.practice.filerepository.FileRepository;
 import org.practice.filerepository.SouvenirFileRepository;
+import org.practice.model.Producer;
 import org.practice.model.Souvenir;
 
 import java.util.List;
@@ -11,9 +12,10 @@ public class SouvenirService implements Service<Souvenir> {
 
     private static SouvenirService INSTANCE = getInstance();
     private final FileRepository<Souvenir> fileRepository;
+    private Service<Producer> producerService;
 
-    private SouvenirService(FileRepository<Souvenir> fileRepository) {
-        this.fileRepository = fileRepository;
+    private SouvenirService() {
+        this.fileRepository = SouvenirFileRepository.getInstance();
     }
 
     public static SouvenirService getInstance() {
@@ -22,10 +24,32 @@ public class SouvenirService implements Service<Souvenir> {
         }
         synchronized (SouvenirService.class) {
             if (INSTANCE == null) {
-                INSTANCE = new SouvenirService(SouvenirFileRepository.getInstance());
+                INSTANCE = new SouvenirService();
+                INSTANCE.setProducerService(ProducerService.getInstance());
             }
         }
         return INSTANCE;
+    }
+
+    private void setProducerService(ProducerService producerService) {
+        this.producerService = producerService;
+    }
+
+    public List<Souvenir> readAllByProducerId(long id) {
+        return readAll(souvenir -> souvenir.getProducerId().equals(id));
+    }
+
+    public List<Souvenir> readAllByCountry(String country) {
+        List<Long> producerIds = producerService
+                .readAll(producer -> producer.getCountry().equals(country))
+                .stream().map(Producer::getId)
+                .toList();
+
+        return readAll(souvenir -> producerIds.contains(souvenir.getProducerId()));
+    }
+
+    public List<Souvenir> readAllByYear(int year) {
+        return readAll(souvenir -> souvenir.getManufacturingYear() == year);
     }
 
     @Override
