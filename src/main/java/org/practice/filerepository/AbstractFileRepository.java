@@ -41,11 +41,19 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return null;
     };
 
+    /**
+     *
+     * @return {@link List<T>} - all objects which were found in the file repository
+     */
     @Override
     public List<T> readAll() {
         return entityList();
     }
 
+    /**
+     * @param predicate will determine what entity must be returned
+     * @return {@link List<T>} - objects which were found in the file repository using the predicate
+     */
     @Override
     public List<T> readAll(Predicate<T> predicate) {
         return entityList()
@@ -54,6 +62,10 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @param id the value which will be used during searching the {@link T} object in the file
+     * @return null if the entity was not found, instance of the {@link T} from the file object otherwise
+     */
     @Override
     public T read(long id) {
         List<T> entityList = readAll(s -> s.getId() == id);
@@ -63,6 +75,10 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return entityList.get(0);
     }
 
+    /**
+     * @param entity which must be inserted in the file.
+     * @return persisted entity with id
+     */
     @Override
     public T add(T entity) {
         long id = generateUniqueId();
@@ -84,6 +100,11 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return entity;
     }
 
+    /**
+     * @param entity which must be updated.
+     * @return false if id of the {@param entity} is null or is not in the file.
+     * true if the updated is ok
+     */
     @Override
     public boolean update(T entity) {
         Long id = entity.getId();
@@ -100,18 +121,20 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
                 })
                 .toList();
 
-        replaceAll(entities);
-        return true;
+        return replaceAll(entities);
     }
 
+    /**
+     * @param predicate will determine what entity must be deleted
+     * @return true if everything was deleted properly, false otherwise
+     */
     @Override
     public boolean delete(Predicate<T> predicate) {
         List<T> entities = readAll().stream()
                 .filter(predicate.negate())
                 .toList();
 
-        replaceAll(entities);
-        return true;
+        return replaceAll(entities);
     }
 
     @Override
@@ -123,6 +146,10 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return delete(entity -> Objects.equals(entity.getId(), id));
     }
 
+    /**
+     * @param entities will be inserted in the file, rewriting all its content
+     * @return true if everything was replaced properly, false otherwise
+     */
     @Override
     public boolean replaceAll(List<T> entities) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(getFilePath()))) {
