@@ -18,7 +18,7 @@ public class ProducerTest {
                 .country("Ukraine")
                 .details("444453529002")
                 .build();
-        Producer actual = Producer.builder().build().fromCsvString(line);
+        Producer actual = Producer.builder().build().fromCsvString(line, Producer.class);
 
         assertEquals(expected, actual, "Producers must be equal");
     }

@@ -23,7 +23,7 @@ public class SouvenirTest {
                 .price(200.00)
                 .producerId(0L)
                 .build();
-        Souvenir actual = Souvenir.builder().build().fromCsvString(line);
+        Souvenir actual = Souvenir.builder().build().fromCsvString(line, Souvenir.class);
 
         assertEquals(expected, actual, "Souvenirs must be equal");
     }

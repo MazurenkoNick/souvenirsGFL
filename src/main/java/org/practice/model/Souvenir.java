@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.practice.annotation.Property;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,34 +16,16 @@ import java.util.List;
 public class Souvenir extends CsvModel<Souvenir> {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
+    @Property
     private Long id;
+    @Property
     private String name;
+    @Property
     private Date manufacturingDate;
+    @Property
     private double price;
+    @Property
     private Long producerId;
-
-    @Override
-    int propertiesLength() {
-        return Souvenir.class.getDeclaredFields().length - 1;
-    }
-
-    @Override
-    public Souvenir buildFromList(List<String> formattedFields) {
-        Date manufacturingDate;
-        try {
-            manufacturingDate = new SimpleDateFormat(DATE_FORMAT).parse(formattedFields.get(2));
-        } catch (ParseException e) {
-            throw new IllegalArgumentException(
-                    "Can't parse date into format yyyy-MM-dd: " + formattedFields.get(2)
-            );
-        }
-        this.id = Long.parseLong(formattedFields.get(0));
-        this.name = formattedFields.get(1);
-        this.manufacturingDate = manufacturingDate;
-        this.price = Double.parseDouble(formattedFields.get(3));
-        this.producerId = Long.parseLong(formattedFields.get(4));
-        return this;
-    }
 
     @Override
     public String format() {

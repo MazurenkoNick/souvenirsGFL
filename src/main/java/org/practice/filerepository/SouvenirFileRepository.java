@@ -27,7 +27,7 @@ public class SouvenirFileRepository extends AbstractFileRepository<Souvenir> {
 
     @Override
     Souvenir fromString(String line) {
-        return new Souvenir().fromCsvString(line);
+        return new Souvenir().fromCsvString(line, Souvenir.class);
     }
 
     @Override

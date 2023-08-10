@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
+import org.practice.annotation.Property;
 
 @Data
 @AllArgsConstructor
@@ -13,24 +12,14 @@ import java.util.List;
 @Builder
 public class Producer extends CsvModel<Producer> {
 
+    @Property
     private Long id;
+    @Property
     private String name;
+    @Property
     private String country;
+    @Property
     private String details;
-
-    @Override
-    Producer buildFromList(List<String> formattedFields) {
-        this.id = Long.parseLong(formattedFields.get(0));
-        this.name = formattedFields.get(1);
-        this.country = formattedFields.get(2);
-        this.details = formattedFields.get(3);
-        return this;
-    }
-
-    @Override
-    int propertiesLength() {
-        return Producer.class.getDeclaredFields().length;
-    }
 
     @Override
     public String format() {

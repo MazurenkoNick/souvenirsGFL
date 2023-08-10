@@ -27,7 +27,7 @@ public class ProducerFileRepository extends AbstractFileRepository<Producer> {
 
     @Override
     Producer fromString(String line) {
-        return new Producer().fromCsvString(line);
+        return new Producer().fromCsvString(line, Producer.class);
     }
 
     @Override
