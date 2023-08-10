@@ -57,10 +57,6 @@ public abstract class CsvModel<T> implements Entity {
         }
     }
 
-    private long propertiesLength(Class<T> entityType) {
-        return getPropertyFields(entityType).size();
-    }
-
     /**
      * Method supports conversion to all primitive (and their wrapper) types, {@link String} and {@link Date}.
      *
@@ -84,6 +80,10 @@ public abstract class CsvModel<T> implements Entity {
             }
         }
         return entity;
+    }
+
+    private long propertiesLength(Class<T> entityType) {
+        return getPropertyFields(entityType).size();
     }
 
     private List<Field> getPropertyFields(Class<T> entityType) {
