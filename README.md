@@ -55,67 +55,100 @@ P.S. Бази даних не використовуємо (тільки фай�
 ```java 
 public abstract class CsvModel<T> implements Entity {
 
-    /**
-     * @param formattedProperties properties that come from the string (file string).
-     *                            Order of the properties must be equal to the order of the {@link T} properties
-     * @return {@link T} object, which should be built using {@code List<String> formattedProperties}
-     */
-    abstract T buildFromList(List<String> formattedProperties);
-    abstract int propertiesLength();
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    public T fromCsvString(String line) {
+    public T fromCsvString(String line, Class<T> entityType) {
         CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
 
         try (CSVReader csvReader = new CSVReaderBuilder(
                 new StringReader(line)).withCSVParser(parser).build()) {
 
             String[] properties = csvReader.readNext();
-            int actualLength = propertiesLength();
+            long actualLength = propertiesLength(entityType);
 
             if (properties == null || properties.length != actualLength) {
                 throw new IllegalArgumentException("Invalid CSV line: " + line);
             }
 
-            List<String> formattedProperties = Arrays.stream(properties).map(String::trim).toList();
-            return buildFromList(formattedProperties);
+            List<String> formattedProperties = Arrays.stream(properties)
+                    .map(String::trim)
+                    .toList();
+            return buildFromList(formattedProperties, entityType);
         }
         catch (CsvValidationException | IOException e) {
             throw new IllegalArgumentException("Error parsing CSV line: " + line, e);
         }
     }
-}
+
+    /**
+     * Method supports conversion to all primitive (and their wrapper) types, {@link String} and {@link Date}.
+     *
+     * @param formattedProperties properties that come from the string (file string).
+     *                            Order of the properties must be equal to the order of the {@link T} properties
+     * @return {@link T} object, which should be built using {@code List<String> formattedProperties}
+     */
+    @SneakyThrows
+    T buildFromList(List<String> formattedProperties, Class<T> entityType) {
+        T entity = entityType.getConstructor().newInstance();
+        List<Field> fields = getPropertyFields(entityType);
+        int curId = 0;
+
+        for (var field : fields) {
+            try {
+                String fieldValue = formattedProperties.get(curId++);
+                field.setAccessible(true);
+                field.set(entity, convertValueToFieldType(field.getType(), fieldValue));
+            } catch (RuntimeException | IllegalAccessException e) {
+                throw new CsvValidationException("Error parsing CSV value: " + field.getName());
+            }
+        }
+        return entity;
+    }
+
+      ...
 ```
 Метод, який відповідає за перетворення в модель зі CSV строки є `T fromCsvString(String line)`. 
-Він отримує CSV строку на вхід, за допомогою бібліотеки `opencsv` парсить кожну властивість та повертає їх масив.
+Він отримує CSV строку на вхід, за допомогою бібліотеки `opencsv` парсить кожну властивість та повертає масив строк.
 Після, цей метод має переконатися, що довжина властивостей строки дорівнює довжні властивостей моделі типу `T`.
-Для цього використаний абстрактний метод `abstract int propertiesLength()`, який має реалізувати кожна імплементація цього абстрактного класу.
-Якщо довжини властивостей відрізняються, то відповідна помилка буде викинута.
-Після цієї перевірки, масив властивостей перетворюється на `List<String>` та з кожної властивості видаляються зайві пробіли.
-Після, відбувається створення моделі за допомогою абстрактного методу:
+Для цього використаний приватний метод: 
 ```java
-/**
- * @param formattedProperties properties that come from the string (file string).
- *                            Order of the properties must be equal to the order of the {@link T} properties
- * @return {@link T} object, which should be built using {@code List<String> formattedProperties}
- */
-abstract T buildFromList(List<String> formattedProperties);
-```
-Порядок властивостей в листі є відповідним до порядку властивостей в файлі (CSV строці). Це має бути враховано під час імплементації методу.
-
-Приклад `Producer` та строки в CSV файлі цієї моделі:
-```java
-@Override
-    Producer buildFromList(List<String> formattedFields) {
-        this.id = Long.parseLong(formattedFields.get(0));
-        this.name = formattedFields.get(1);
-        this.country = formattedFields.get(2);
-        this.details = formattedFields.get(3);
-        return this;
+private long propertiesLength(Class<T> entityType) {
+        return getPropertyFields(entityType).size();
     }
 ```
-Для строки: `8242638950474072785, Volkswagen, Germany, 44477737333`. Під час написання цього тексту, виникла думка, що, можливо, 
-в методі `T fromCsvString(String line)` краще було б використовувати `Map<String, String>` замість `List<String>`. Де ключем була б 
-назва властивості, а значенням - сама властивість. Тоді при реалізації методу `buildFromList` не потрібно було б спиратись на порядок властивостей у файлі.
+Якщо довжини властивостей відрізняються, то відповідна помилка буде викинута.
+Після цієї перевірки, масив властивостей перетворюється на `List<String>` та з кожної властивості видаляються зайві пробіли.
+Після, відбувається створення моделі за допомогою методу:
+```java
+T buildFromList(List<String> formattedProperties, Class<T> entityType) {
+        T entity = entityType.getConstructor().newInstance();
+        List<Field> fields = getPropertyFields(entityType);
+        int curId = 0;
+
+        for (var field : fields) {
+            try {
+                String fieldValue = formattedProperties.get(curId++);
+                field.setAccessible(true);
+                field.set(entity, convertValueToFieldType(field.getType(), fieldValue));
+            } catch (RuntimeException | IllegalAccessException e) {
+                throw new CsvValidationException("Error parsing CSV value: " + field.getName());
+            }
+        }
+        return entity;
+    }
+```
+Порядок властивостей в файлі (CSV строці) має бути відповідним до порядку властивостей в моделі. Сам метод читає всі поля,
+на яких є анотації `@Property` за допомогою метода:
+```java
+private List<Field> getPropertyFields(Class<T> entityType) {
+        return Arrays.stream(entityType.getDeclaredFields())
+                .filter(field -> field.getAnnotation(Property.class) != null)
+                .collect(Collectors.toList());
+    }
+```
+та намагається засетити в ці поля відповідні властивості з листа, за допомогою приватного метода`convertValueToFieldType(field.getType(), fieldValue)`. 
+Цей метод підтримує конвертацію всіх примітивних типів та їх обгортки, `String` та `java.util.Date`.
+Якщо користувачу потрібно змінити логіку присвоєння властивостей, то він може її переписати.
 
 ### Робота з файлами
 Вирішено зробити інтерфейс, який є контрактом для роботи з файлами:
@@ -179,14 +212,14 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
   де `PATH = "src/main/resources/souvenirs.csv"`
 - `abstract long generateUniqueId()` - має повертати унікальний id для кожної моделі. Імпелементація кращого методу залишена для користувачів.
 - `abstract T fromString(String line)` - метод, який має повертати реалізацію інтерфейсу `Entity` - об'єкт, який створено зі строки.
-  Вище ми пописували імплементацію `T fromCsvString(String line)` класу `abstract class CsvModel<T> implements Entity`.
+  Вище ми описували реалізацію методу `T fromCsvString(String line, Class<T> entityType)` класу `abstract class CsvModel<T> implements Entity`.
   Таким чином останній метод може бути використаний в імплементації методу `abstract T fromString(String line)`.
 
   Приклад `SouvenirFileRepository`:
   ```java
     @Override
     Souvenir fromString(String line) {
-        return new Souvenir().fromCsvString(line);
+        return new Souvenir().fromCsvString(line, Souvenir.class);
     }
   ```
 - `String filePropertiesHeader()` - опціональний метод, який може повертати бажану першу строку файлу.
