@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * converted in the {@link CsvModel#fromCsvString(String, Class)} method.
  * Properties must have {@link org.practice.annotation.Property} annotation.
  * <br/>
- * Supported properties types: all primitive (and their wrapper) types, and {@link Date}
+ * Supported properties types: all primitive (and their wrapper) types, {@link String} and {@link Date}
  * with format yyyy-MM-dd.
  * <br/>
  * If you want another logic to convert a line to {@link T} entity, you need to override
@@ -62,7 +62,7 @@ public abstract class CsvModel<T> implements Entity {
     }
 
     /**
-     * Method supports conversion to all primitive (and their wrapper) types, and {@link Date}.
+     * Method supports conversion to all primitive (and their wrapper) types, {@link String} and {@link Date}.
      *
      * @param formattedProperties properties that come from the string (file string).
      *                            Order of the properties must be equal to the order of the {@link T} properties
@@ -102,6 +102,8 @@ public abstract class CsvModel<T> implements Entity {
     @SneakyThrows
     private <F> F convertPrimitive(Class<F> fieldType, String fieldValue) {
         if (fieldType == Integer.class || fieldType == int.class ||
+            fieldType == Short.class || fieldType == short.class ||
+            fieldType == Byte.class || fieldType == byte.class ||
             fieldType == Long.class || fieldType == long.class ||
             fieldType == Float.class || fieldType == float.class ||
             fieldType == Double.class || fieldType == double.class ||
