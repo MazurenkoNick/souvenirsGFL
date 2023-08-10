@@ -20,9 +20,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * All properties will be
- * converted in the {@link CsvModel#fromCsvString(String, Class)} method.
- * Properties must have {@link org.practice.annotation.Property} annotation.
+ * The CSV string will be converted to the {@link T} entity
+ * using a {@link CsvModel#fromCsvString(String, Class)} method.
+ * Every property of the {@link T} entity must have {@link org.practice.annotation.Property} annotation.
+ * <br/>
+ * Order and quantity of the properties in the CSV line (first parameter of {@link #fromCsvString(String, Class)})
+ * must match an order and a quantity of the properties of the {@link T} entity
  * <br/>
  * Supported properties types: all primitive (and their wrapper) types, {@link String} and {@link Date}
  * with format yyyy-MM-dd.
@@ -34,6 +37,13 @@ public abstract class CsvModel<T> implements Entity {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
+    /**
+     *
+     * @param line must have a CSV format; quantity of its properties must match
+     *             the quantity of the Model properties.
+     * @param entityType is used to find all properties (fields which have annotation {@link Property}).
+     * @return {@link T} entity, which is built from the {@code line} parameter.
+     */
     public T fromCsvString(String line, Class<T> entityType) {
         CSVParser parser = new CSVParserBuilder().withSeparator(',').build();
 
@@ -58,8 +68,9 @@ public abstract class CsvModel<T> implements Entity {
     }
 
     /**
-     * Method supports conversion to all primitive (and their wrapper) types, {@link String} and {@link Date}.
-     *
+     * Method converts {@code List<String> formattedProperties} to {@link T} model, using
+     * {@link #convertValueToFieldType} method for each field,
+     * which supports conversion to all primitive (and their wrapper) types, {@link String} and {@link Date}.
      * @param formattedProperties properties that come from the string (file string).
      *                            Order of the properties must be equal to the order of the {@link T} properties
      * @return {@link T} object, which should be built using {@code List<String> formattedProperties}
