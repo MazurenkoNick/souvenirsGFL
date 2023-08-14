@@ -18,8 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The CSV string will be converted to the {@link T} entity
- * using a {@link CsvModel#fromCsvString(String, Class)} method.
+ * The entity {@link T} can be converted to the CSV representation using {@link #toCsvString} method.
+ * The CSV string can be converted to the {@link T} entity
+ * using a {@link CsvModel#fromCsvString(String, Class)} method as well.
  * Every property of the {@link T} entity must have {@link org.practice.annotation.Property} annotation.
  * <br/>
  * Order and quantity of the properties in the CSV line (first parameter of {@link #fromCsvString(String, Class)})
@@ -36,7 +37,7 @@ public abstract class CsvModel<T> implements Entity {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     /**
-     * Converts of {@link T} class` fields, annotated with {@link Property} annotation
+     * Converts {@link T} entity fields annotated with {@link Property}
      * to the CSV String
      * @param entityType
      * @return {@link String} with a CSV format
