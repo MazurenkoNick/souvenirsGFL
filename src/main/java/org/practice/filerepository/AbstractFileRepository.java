@@ -86,7 +86,14 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         try (PrintWriter writer = new PrintWriter(new FileWriter(getFilePath(), true));
              BufferedReader reader = new BufferedReader(new FileReader(getFilePath()))) {
 
-            String lastLine = getLastLine(reader);
+            List<String> lines = reader.lines().toList();
+
+            // if the file is empty - write header if needed
+            String firstLine = getFirstLine(lines);
+            if (firstLine.isBlank() && filePropertiesHeader() != null && lines.isEmpty()) {
+                writer.println(filePropertiesHeader());
+            }
+            String lastLine = getLastLine(lines);
             // if last line is not empty - create a new empty line, where we will write new entity
             if (!lastLine.isBlank()) {
                 writer.println();
@@ -169,7 +176,8 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     /**
      * Method retrieves all the entities from the file.
      * It skips the first row because it must contain only names of the properties,
-     * which are set in the {@link this#filePropertiesHeader()} method.
+     * if {@link this#filePropertiesHeader()} method is implemented by a user.
+     * First row in the file must match the return type of the {@link this#filePropertiesHeader()}
      *
      * @return List of all the entities retrieved from the file
      */
@@ -192,13 +200,18 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return readAll(s -> s.getId() == id).isEmpty();
     }
 
-    private String getLastLine(BufferedReader reader) throws IOException {
-        String lastLine = "";
-        String currentLine;
-
-        while ((currentLine = reader.readLine()) != null) {
-            lastLine = currentLine;
+    private String getLastLine(List<String> lines) throws IOException {
+        if (lines.isEmpty()) {
+            return "";
         }
-        return lastLine;
+        int lastIdx = lines.size() - 1;
+        return lines.get(lastIdx);
+    }
+
+    private String getFirstLine(List<String> lines) throws IOException {
+        if (lines.isEmpty()) {
+            return "";
+        }
+        return lines.get(0);
     }
 }
