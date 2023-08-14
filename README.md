@@ -35,27 +35,61 @@ P.S. Бази даних не використовуємо (тільки фай�
 Для початку роботи вирішено створити дві основні моделі, які будуть зберігатися в файлі: `Souvenir` та `Producer`.
 Постала проблема обробки цих моделей. Потрібно перетворювати їх у CSV формат, та з нього в об'єкт, використовуючи властивості цього об'єкта.
 ### Перетворення моделі в CSV формат:
-Було створено інтерфейс `Entity`, який має методи `getId()`, `setId()` для зберігання унікальних моделей в файл. 
-Також він має метод `String format()`, який має імплементувати кожна реалізація цього інтерфейсу. 
-Цей метод буде використано для перетворення об'єкту в строку формату CSV у нашому випадку.
-
-Приклад `Souvenir`:
+Було створено анотацію `@Property`, яка є маркером для полів в наших моделях. Потрібно, щоб кожна властивість, аналог якої є в файлі, мав цю анотацію.
+Метод, який відповідає за конвертацію моделі в CSV строку - є `toCsvString` в абстрактному класі `CsvModel`:
 ```java
-@Override
-    public String format() {
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-        return String.format("%d, %s, %s, %f, %d",
-                id, name, formatter.format(manufacturingDate), price, producerId
-        );
+public abstract class CsvModel<T> implements Entity {
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
+    /**
+     * Converts {@link T} entity fields annotated with {@link Property}
+     * to the CSV String
+     * @param entityType
+     * @return {@link String} with a CSV format
+     */
+    @SneakyThrows
+    public String toCsvString(Class<T> entityType) {
+        StringWriter writer = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(writer);
+
+        String[] propertyNames = String[] propertyNames = getPropertyFields(entityType).stream()
+                .map(Field::getName)
+                .toArray(String[]::new);
+
+        // Get property values using reflection and propertyNames
+        String[] propertyValues = Arrays.stream(propertyNames)
+                .map(propertyName -> {
+                    try {
+                        Field field = entityType.getDeclaredField(propertyName);
+                        field.setAccessible(true);
+                        Object value = field.get(this);
+                        if (field.getType() == Date.class) {
+                            return DATE_FORMAT.format((Date) value);
+                        }
+                        return String.valueOf(value);
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("There is no field: " + propertyName);
+                    }
+                })
+                .toArray(String[]::new);
+
+        csvWriter.writeNext(propertyValues);
+        csvWriter.close();
+
+        return writer.toString().trim();
     }
 ```
+Цей метод проходиться по всім полям, та вибирає саме властивості, які мають бути представлені в CSV форматі, за допомогою Reflection API.
+Після, він створює CSV строку зі значеннями властивостей поточної сутності.
 
 ### Перетворення CSV строки в модель:
 Було створено абстрактний клас: 
 ```java 
 /**
- * The CSV string will be converted to the {@link T} entity
- * using a {@link CsvModel#fromCsvString(String, Class)} method.
+ * The entity {@link T} can be converted to the CSV representation using {@link #toCsvString} method.
+ * The CSV string can be converted to the {@link T} entity
+ * using a {@link CsvModel#fromCsvString(String, Class)} method as well.
  * Every property of the {@link T} entity must have {@link org.practice.annotation.Property} annotation.
  * <br/>
  * Order and quantity of the properties in the CSV line (first parameter of {@link #fromCsvString(String, Class)})
@@ -71,6 +105,8 @@ public abstract class CsvModel<T> implements Entity {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
+    ...
+    
     /**
      *
      * @param line must have a CSV format; quantity of its properties must match
@@ -211,6 +247,15 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     abstract T fromString(String line);
 
     /**
+     * This method will be used to convert an entity to the String representation,
+     * that will be saved to the file.
+     *
+     * @param entity is used to be converted to the {@link String}
+     * @return String which was converted from the {@link Entity} parameter
+     */
+    abstract String toString(T entity);
+
+    /**
      * @return first line of the file which should represent properties of the current entity.
      * By default, there is no properties header in the file
      */
@@ -218,7 +263,6 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return null;
     };
     ...
-}
 ```
 Він імплементує всі методи інтерфейсу `FileRepository<T>`. Проте, для роботи з ним потрібно імплементувати вищевказані методи.
 - `abstract String getFilePath()` - має повертати шлях з кореневого сховища (from repository root).
@@ -241,6 +285,15 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     @Override
     Souvenir fromString(String line) {
         return new Souvenir().fromCsvString(line, Souvenir.class);
+    }
+  ```
+- `abstract String toString(T entity)` - метод, який має повернути репрезентацію сутності в строці.
+  Вище ми описували метод `toCsvString` абстрактного класу `CsvModel`. Його ми і використали для реалізації методу `abstract String toString(T entity)`.
+  Приклад `SouvenirFileRepository`:
+  ```java
+    @Override
+    String toString(Souvenir souvenir) {
+        return souvenir.toCsvString(Souvenir.class);
     }
   ```
 - `String filePropertiesHeader()` - опціональний метод, який може повертати бажану першу строку файлу.
