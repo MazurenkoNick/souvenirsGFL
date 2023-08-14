@@ -3,10 +3,13 @@ package org.practice.filerepository;
 import org.practice.model.Souvenir;
 import org.practice.utils.Utils;
 
+import java.text.SimpleDateFormat;
+
 public class SouvenirFileRepository extends AbstractFileRepository<Souvenir> {
 
     private static SouvenirFileRepository INSTANCE = getInstance();
     private static final String PATH = "src/main/resources/souvenirs.csv";
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     public static SouvenirFileRepository getInstance() {
         if (INSTANCE != null) {
@@ -28,6 +31,15 @@ public class SouvenirFileRepository extends AbstractFileRepository<Souvenir> {
     @Override
     Souvenir fromString(String line) {
         return new Souvenir().fromCsvString(line, Souvenir.class);
+    }
+
+    @Override
+    String toString(Souvenir souvenir) {
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+        return String.format("%d, %s, %s, %f, %d",
+                souvenir.getId(), souvenir.getName(), formatter.format(souvenir.getManufacturingDate()),
+                souvenir.getPrice(), souvenir.getProducerId()
+        );
     }
 
     @Override

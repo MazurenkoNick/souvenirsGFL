@@ -20,11 +20,4 @@ public class Producer extends CsvModel<Producer> {
     private String country;
     @Property
     private String details;
-
-    @Override
-    public String format() {
-        return String.format("%d, %s, %s, %s",
-                id, name, country, details
-        );
-    }
 }

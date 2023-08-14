@@ -34,6 +34,15 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
     abstract T fromString(String line);
 
     /**
+     * This method will be used to convert an entity to the String representation,
+     * that will be saved to the file.
+     *
+     * @param entity is used to be converted to the {@link String}
+     * @return String which was converted from the {@link Entity} parameter
+     */
+    abstract String toString(T entity);
+
+    /**
      * @return first line of the file which should represent properties of the current entity.
      * By default, there is no properties header in the file
      */
@@ -87,7 +96,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
             long id = generateUniqueId();
             prepareFile(reader, writer);
             entity.setId(id);
-            writer.print(entity.format());
+            writer.print(toString(entity));
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -152,7 +161,7 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
                 writer.println(filePropertiesHeader());
             }
             for (T entity : entities) {
-                writer.println(entity.format());
+                writer.println(toString(entity));
             }
         }
         catch (IOException e) {

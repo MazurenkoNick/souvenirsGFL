@@ -31,6 +31,13 @@ public class ProducerFileRepository extends AbstractFileRepository<Producer> {
     }
 
     @Override
+    public String toString(Producer producer) {
+        return String.format("%d, %s, %s, %s",
+                producer.getId(), producer.getName(), producer.getCountry(), producer.getDetails()
+        );
+    }
+
+    @Override
     String getFilePath() {
         return PATH;
     }

@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.practice.annotation.Property;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Data
@@ -26,14 +25,6 @@ public class Souvenir extends CsvModel<Souvenir> {
     private double price;
     @Property
     private Long producerId;
-
-    @Override
-    public String format() {
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-        return String.format("%d, %s, %s, %f, %d",
-                id, name, formatter.format(manufacturingDate), price, producerId
-        );
-    }
 
     public int getManufacturingYear() {
         return getManufacturingDate().getYear() + 1900;
