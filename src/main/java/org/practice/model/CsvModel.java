@@ -47,8 +47,7 @@ public abstract class CsvModel<T> implements Entity {
         StringWriter writer = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(writer);
 
-        String[] propertyNames = Arrays.stream(entityType.getDeclaredFields())
-                .filter(field -> field.getAnnotation(Property.class) != null)
+        String[] propertyNames = getPropertyFields(entityType).stream()
                 .map(Field::getName)
                 .toArray(String[]::new);
 
