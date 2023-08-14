@@ -81,23 +81,11 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
      */
     @Override
     public T add(T entity) {
-        long id = generateUniqueId();
-
         try (PrintWriter writer = new PrintWriter(new FileWriter(getFilePath(), true));
              BufferedReader reader = new BufferedReader(new FileReader(getFilePath()))) {
 
-            List<String> lines = reader.lines().toList();
-
-            // if the file is empty - write header if needed
-            String firstLine = getFirstLine(lines);
-            if (firstLine.isBlank() && filePropertiesHeader() != null && lines.isEmpty()) {
-                writer.println(filePropertiesHeader());
-            }
-            String lastLine = getLastLine(lines);
-            // if last line is not empty - create a new empty line, where we will write new entity
-            if (!lastLine.isBlank()) {
-                writer.println();
-            }
+            long id = generateUniqueId();
+            prepareFile(reader, writer);
             entity.setId(id);
             writer.print(entity.format());
         }
@@ -200,18 +188,33 @@ public abstract class AbstractFileRepository<T extends Entity> implements FileRe
         return readAll(s -> s.getId() == id).isEmpty();
     }
 
-    private String getLastLine(List<String> lines) throws IOException {
+    /**
+     *  If the file is empty and {@link #filePropertiesHeader()} method is implemented
+     *  not to return null value, {@link #prepareFile(BufferedReader, PrintWriter)} will
+     *  create a new first line with value returned from {@link #filePropertiesHeader()}.
+     *  If the last line of the file is not blank, create a new line, where the entity will be inserted
+     *
+     * @throws IOException
+     */
+    private void prepareFile(BufferedReader reader, PrintWriter writer) throws IOException {
+        List<String> lines = reader.lines().toList();
+
+        // if file is empty - write header if needed
+        if (lines.isEmpty() && filePropertiesHeader() != null) {
+            writer.println(filePropertiesHeader());
+        }
+        String lastLine = getLastLine(lines);
+        // if last line is not empty - create a new empty line, where we will write new entity
+        if (!lastLine.isBlank()) {
+            writer.println();
+        }
+    }
+
+    private String getLastLine(List<String> lines) {
         if (lines.isEmpty()) {
             return "";
         }
         int lastIdx = lines.size() - 1;
         return lines.get(lastIdx);
-    }
-
-    private String getFirstLine(List<String> lines) throws IOException {
-        if (lines.isEmpty()) {
-            return "";
-        }
-        return lines.get(0);
     }
 }
