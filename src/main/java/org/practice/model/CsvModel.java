@@ -1,15 +1,13 @@
 package org.practice.model;
 
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
+import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.SneakyThrows;
 import org.practice.annotation.Property;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -36,6 +34,45 @@ import java.util.stream.Collectors;
 public abstract class CsvModel<T> implements Entity {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
+    /**
+     * Converts of {@link T} class` fields, annotated with {@link Property} annotation
+     * to the CSV String
+     * @param entityType
+     * @return {@link String} with a CSV format
+     */
+    @SneakyThrows
+    public String toCsvString(Class<T> entityType) {
+        StringWriter writer = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(writer);
+
+        String[] propertyNames = Arrays.stream(entityType.getDeclaredFields())
+                .filter(field -> field.getAnnotation(Property.class) != null)
+                .map(Field::getName)
+                .toArray(String[]::new);
+
+        // Get property values using reflection and propertyNames
+        String[] propertyValues = Arrays.stream(propertyNames)
+                .map(propertyName -> {
+                    try {
+                        Field field = entityType.getDeclaredField(propertyName);
+                        field.setAccessible(true);
+                        Object value = field.get(this);
+                        if (field.getType() == Date.class) {
+                            return DATE_FORMAT.format((Date) value);
+                        }
+                        return String.valueOf(value);
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("There is no field: " + propertyName);
+                    }
+                })
+                .toArray(String[]::new);
+
+        csvWriter.writeNext(propertyValues);
+        csvWriter.close();
+
+        return writer.toString().trim();
+    }
 
     /**
      *

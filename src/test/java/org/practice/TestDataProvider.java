@@ -16,11 +16,9 @@ public class TestDataProvider {
                 Arguments.of(
                         List.of(
                                 new Producer(0L, "Ivan Production",
-                                        "Ukraine", "444453529002"),
-                                new Producer(1L, "Ivan Production",
                                         "Ukraine", "444453529002")
                         ),
-                        350
+                        351
                 )
         );
     }
@@ -30,8 +28,6 @@ public class TestDataProvider {
                 Arguments.of(
                         List.of(
                                 new Producer(0L, "Ivan Production",
-                                        "Ukraine", "444453529002"),
-                                new Producer(1L, "Ivan Production",
                                         "Ukraine", "444453529002")
                         ),
                         2019
@@ -54,7 +50,7 @@ public class TestDataProvider {
                         List.of(
                             new Souvenir(2202499513421820009L, "Porsche",
                                     dateFormat.parse("2029-02-02"), 10350, 1L),
-                            new Souvenir(2202499513421820009L, "Porsche",
+                            new Souvenir(2202499513421820010L, "Porsche",
                                     dateFormat.parse("2029-02-02"), 10350, 1L)
                         ),
                         2029
@@ -67,10 +63,10 @@ public class TestDataProvider {
         return Stream.of(
                 Arguments.of(
                         List.of(
-                                new Souvenir(3954570612593142035L, "Big Toy",
-                                        dateFormat.parse("2022-02-02"), 351.000000, 3L),
-                                new Souvenir(3954570612593142035L, "Big Toy",
-                                        dateFormat.parse("2022-02-02"), 351, 3L)
+                                new Souvenir(2202499513421820013L, "Porsche",
+                                        dateFormat.parse("2011-02-02"), 10350, 3L),
+                                new Souvenir(2202499513421820014L, "Porsche",
+                                        dateFormat.parse("2011-02-02"), 10350, 3L)
                         ),
                         "Poland"
                 )
@@ -82,10 +78,10 @@ public class TestDataProvider {
         return Stream.of(
                 Arguments.of(
                         List.of(
-                                new Souvenir(3954570612593142035L, "Big Toy",
-                                        dateFormat.parse("2022-02-02"), 351.000000, 3L),
-                                new Souvenir(3954570612593142035L, "Big Toy",
-                                        dateFormat.parse("2022-02-02"), 351, 3L)
+                                new Souvenir(2202499513421820013L, "Porsche",
+                                        dateFormat.parse("2011-02-02"), 10350, 3L),
+                                new Souvenir(2202499513421820014L, "Porsche",
+                                        dateFormat.parse("2011-02-02"), 10350, 3L)
                         ),
                         3L
                 )

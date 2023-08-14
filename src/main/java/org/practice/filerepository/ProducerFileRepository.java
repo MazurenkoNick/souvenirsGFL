@@ -32,9 +32,7 @@ public class ProducerFileRepository extends AbstractFileRepository<Producer> {
 
     @Override
     public String toString(Producer producer) {
-        return String.format("%d, %s, %s, %s",
-                producer.getId(), producer.getName(), producer.getCountry(), producer.getDetails()
-        );
+        return producer.toCsvString(Producer.class);
     }
 
     @Override

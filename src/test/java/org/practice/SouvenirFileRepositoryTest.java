@@ -48,7 +48,7 @@ public class SouvenirFileRepositoryTest {
                 .id(3954570612593142035L)
                 .name("Big Toy")
                 .manufacturingDate(dateFormat.parse("2022-02-02"))
-                .price(349)
+                .price(350)
                 .producerId(0L)
                 .build();
         Souvenir actual = souvenirFileRepository.read(3954570612593142035L);
